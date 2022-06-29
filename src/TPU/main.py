@@ -63,22 +63,11 @@ def train(dimension):
 
     actor = Actor(dimension, slevel_max=opt.slevel_max, num_pe=opt.num_pe, par_RS=opt.parRS, device=device).to(device)
 
-    # actor_tile_params = filter(lambda p: id(p) in actor.get_tile_params(), actor.parameters())
-    # actor_order_params = filter(lambda p: id(p) in actor.get_order_params(), actor.parameters())
-    # actor_parallel_params = filter(lambda p: id(p) in actor.get_parallel_params(), actor.parameters())
-    #
-    # actor_optimizer = optim.Adam([{'params': actor_tile_params},
-    #                               {'params': actor_order_params},
-    #                               {'params': actor_parallel_params}], lr=LR_ACTOR, betas=(0.9, 0.999))
     actor_optimizer = optim.Adam(actor.parameters(), lr=LR_ACTOR, betas=(0.9, 0.999))
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(actor_optimizer, factor=0.9, min_lr=1e-6)
     num_episodes = 10
     best_reward = float('-inf')
-    # best_sol = None
-    # best_actor = None
     thres_epoch = 10
     for ep in range(opt.epochs):
-        # state_info = env.epoch_reset(dimension, model_bound, opt.fitness1)
         policy_loss = 0.
 
         if ep > 0 and ep % thres_epoch == 0:
@@ -89,14 +78,9 @@ def train(dimension):
                         break
                 print(param_group['lr'])
 
-        # if ep > 0 and ep % 5 == 0:
-        #     env.reset_initial_state(agent_chkpt['best_state'])
-        #     print("++++++++", ep, agent_chkpt['best_state'])
-
         for episode in range(num_episodes):
             rewards = []
             log_probs = []
-            # state_info = env.episode_reset()
             state_info = env.epoch_reset(dimension, opt.fitness)
             actor.reset()
             for t in range(7*6):
@@ -110,10 +94,8 @@ def train(dimension):
                     break
 
             policy_loss += compute_policy_loss(rewards, log_probs)
-            # print("Episode {}".format(episode), rewards, policy_loss, sol, constraint)
 
             if info == 'success':
-                # success_rewards.append(max(reward-env.min_reward, 5.0))
                 log_str = "Success Epoch {}, Episode {}, Reward: {}, Sol: {}, constraint: {}\n".format(
                     ep, episode, reward_saved, sol, constraint)
                 print (log_str)
@@ -121,10 +103,6 @@ def train(dimension):
                 epf.flush()
                 if reward_saved > best_reward:
                     best_reward = reward_saved
-                    # best_latency = latency
-                    # best_energy = energy
-                    # best_sol = sol
-                    # best_actor = actor.state_dict()
                     agent_chkpt['best_actor'] = actor.state_dict()
                     agent_chkpt['best_reward'] = best_reward
                     agent_chkpt['best_latency'] = latency
@@ -181,9 +159,9 @@ if __name__ == "__main__":
         outdir = opt.outdir
         outdir = os.path.join("../../", outdir)
         if opt.fixedCluster>0:
-            exp_name = "flex_unified_{}_SL-{}-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
+            exp_name = "TPU_{}_SL-{}-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
         else:
-            exp_name = "flex_unified_{}_SL-{}-{}_FixCl-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fixedCluster, opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
+            exp_name = "TPU_{}_SL-{}-{}_FixCl-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fixedCluster, opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
         outdir_exp = os.path.join(outdir, exp_name)
         os.makedirs(outdir, exist_ok=True)
         os.makedirs(outdir_exp, exist_ok=True)
