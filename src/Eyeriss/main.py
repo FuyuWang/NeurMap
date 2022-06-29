@@ -1,7 +1,7 @@
 import copy
 import argparse
 import random
-from datetime import datetime
+import pandas as pd
 import glob
 import os, sys
 
@@ -15,7 +15,6 @@ script_dir = os.path.dirname(__file__)
 module_path = os.path.abspath(os.path.join(script_dir, '../'))
 if module_path not in sys.path:
     sys.path.insert(0,module_path)
-from utils.utils import *
 from loss import compute_policy_loss
 
 
