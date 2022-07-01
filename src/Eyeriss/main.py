@@ -161,7 +161,7 @@ if __name__ == "__main__":
         if opt.fixedCluster>0:
             exp_name = "Eyeriss_{}_SL-{}-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
         else:
-            exp_name = "Eyeriss_unified_{}_SL-{}-{}_FixCl-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fixedCluster, opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
+            exp_name = "Eyeriss_{}_SL-{}-{}_FixCl-{}_F-{}_PE-{}_L1-{}_L2-{}_EPOCH-{}/layer-{}".format(opt.model,opt.slevel_min, opt.slevel_max,opt.fixedCluster, opt.fitness, opt.num_pe, opt.l1_size, opt.l2_size, opt.epochs, i)
         outdir_exp = os.path.join(outdir, exp_name)
         os.makedirs(outdir, exist_ok=True)
         os.makedirs(outdir_exp, exist_ok=True)
